@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Support | Ally Bank</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div class="logo">
+        <h2>Ally<span>Bank</span></h2>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <!-- DYNAMIC -->
+      </ul>
+      <div class="mobile-menu-toggle">Menu</div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="page-hero support-hero">
+    <div class="container">
+      <h1>We're Here to Help</h1>
+      <p class="lead">Get answers fast — 24/7.</p>
+      <a href="mailto:allybank452@gmail.com" class="btn-primary">Email Us</a>
+      <a href="tel:18772472559" class="btn-secondary">Call 1-877-247-ALLY</a>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq">
+    <div class="container">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-grid">
+        <details class="faq-item">
+          <summary>How do I open an account?</summary>
+          <p>Click "Open Account" on the homepage, enter your info, and verify identity. Takes under 3 minutes.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Is my money safe?</summary>
+          <p>Yes. Ally Bank is FDIC insured up to $250,000 per depositor.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Are there any fees?</summary>
+          <p>No monthly fees, no minimum balance fees, no overdraft fees.</p>
+        </details>
+        <details class="faq-item">
+          <summary>How do I deposit a check?</summary>
+          <p>Use mobile check deposit in the app — snap, upload, done.</p>
+        </details>
+        <details class="faq-item">
+          <summary>What if I forget my PIN?</summary>
+          <p>Click "Forgot PIN?" on login to reset via email.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Can I bank on weekends?</summary>
+          <p>Yes — online banking and support are available 24/7.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Options -->
+  <section class="contact-options">
+    <div class="container">
+      <h2>Other Ways to Reach Us</h2>
+      <div class="options-grid">
+        <div class="option">
+          <h3>Live Chat</h3>
+          <p>Available in-app or on desktop.</p>
+          <a href="#" class="link-accent">Start Chat</a>
+        </div>
+        <div class="option">
+          <h3>Help Center</h3>
+          <p>Search hundreds of articles.</p>
+          <a href="#" class="link-accent">Visit Help Center</a>
+        </div>
+        <div class="option">
+          <h3>Secure Message</h3>
+          <p>Log in to send a message.</p>
+          <a href="#" id="secureMessageLink" class="link-accent">Log In to Message</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-col">
+        <div class="footer-logo">
+          <h3>Ally<span>Bank</span></h3>
+          <p>Digital banking. No nonsense.</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="savings.html">Savings Accounts</a></li>
+          <li><a href="accounts.html">Checking Accounts</a></li>
+          <li><a href="investing.html">Certificates of Deposit</a></li>
+          <li><a href="#">Auto Loans</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Investor Relations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Email: <a href="mailto:allybank452@gmail.com">allybank452@gmail.com</a></p>
+        <div class="social-links">
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2025 Ally Bank. Member FDIC. Equal Housing Lender.</p>
+        <div class="legal-links">
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Use</a>
+          <a href="security.html">Security</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = sessionStorage.getItem('currentUser');
+      const navLinks = document.getElementById('navLinks');
+      const secureMsgLink = document.getElementById('secureMessageLink');
+
+      if (currentUser) {
+        // LOGGED IN
+        navLinks.innerHTML = `
+          <li><a href="#" onclick="navigateSecure(event, 'index.html')">Home</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'accounts.html')">Accounts</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'savings.html')">Savings</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
+          <li><a href="#" class="active">Support</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'dashboard.html')" class="btn-login">Dashboard</a></li>
+          <li><a href="#" id="logoutBtn" class="btn-login" style="background:#dc2626;">Logout</a></li>
+        `;
+
+        secureMsgLink.href = '#';
+        secureMsgLink.onclick = (e) => { e.preventDefault(); navigateSecure(e, 'dashboard.html'); };
+        secureMsgLink.textContent = 'Go to Dashboard';
+
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+          e.preventDefault();
+          sessionStorage.removeItem('currentUser');
+          window.location.href = 'index.html';
+        });
+      } else {
+        // NOT LOGGED IN
+        navLinks.innerHTML = `
+          <li><a href="#" onclick="navigateSecure(event, 'index.html')">Home</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'accounts.html')">Accounts</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'savings.html')">Savings</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
+          <li><a href="#" class="active">Support</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'login.html')" class="btn-login">Log In</a></li>
+        `;
+
+        secureMsgLink.href = 'login.html';
+      }
+
+      // Mobile menu
+      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
+    });
+
+    function navigateSecure(e, url) {
+      e.preventDefault();
+      const user = sessionStorage.getItem('currentUser');
+      if (user) sessionStorage.setItem('currentUser', user);
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>

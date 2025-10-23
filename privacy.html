@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Privacy Policy | Ally Bank</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div class="logo">
+        <h2>Ally<span>Bank</span></h2>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <!-- DYNAMIC -->
+      </ul>
+      <div class="mobile-menu-toggle">Menu</div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-header legal-header">
+    <div class="container">
+      <h1>Privacy Policy</h1>
+      <p class="lead">Last updated: October 23, 2025</p>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <section class="legal-content">
+    <div class="container">
+      <div class="legal-section">
+        <h2>1. Information We Collect</h2>
+        <p>We collect information you provide directly, such as:</p>
+        <ul>
+          <li>Name, email, phone number, and mailing address</li>
+          <li>Social Security Number (for identity verification)</li>
+          <li>Account numbers, balances, and transaction history</li>
+          <li>Device information and IP address</li>
+        </ul>
+      </div>
+
+      <div class="legal-section">
+        <h2>2. How We Use Your Information</h2>
+        <p>We use your data to:</p>
+        <ul>
+          <li>Open and manage your accounts</li>
+          <li>Process transactions and send statements</li>
+          <li>Prevent fraud and enhance security</li>
+          <li>Improve our services and communicate with you</li>
+        </ul>
+      </div>
+
+      <div class="legal-section">
+        <h2>3. Information Sharing</h2>
+        <p>We do not sell your personal information. We may share data with:</p>
+        <ul>
+          <li>Service providers (e.g., payment processors)</li>
+          <li>Law enforcement (when required by law)</li>
+          <li>Affiliated companies for account management</li>
+        </ul>
+      </div>
+
+      <div class="legal-section">
+        <h2>4. Your Privacy Choices</h2>
+        <p>You can:</p>
+        <ul>
+          <li>Access and update your personal information</li>
+          <li>Opt out of marketing emails</li>
+          <li>Request deletion of your data (subject to legal requirements)</li>
+        </ul>
+      </div>
+
+      <div class="legal-section">
+        <h2>5. Security Measures</h2>
+        <p>We protect your data with:</p>
+        <ul>
+          <li>256-bit SSL encryption</li>
+          <li>Multi-factor authentication</li>
+          <li>Regular security audits</li>
+          <li>FDIC insurance up to $250,000</li>
+        </ul>
+      </div>
+
+      <div class="legal-section">
+        <h2>6. Contact Us</h2>
+        <p>For privacy concerns:</p>
+        <p>Email: <a href="mailto:privacy@allybank.com">privacy@allybank.com</a></p>
+        <p>Mail: Ally Bank Privacy Office, P.O. Box 951, Horsham, PA 19044</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-col">
+        <div class="footer-logo">
+          <h3>Ally<span>Bank</span></h3>
+          <p>Digital banking. No nonsense.</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="savings.html">Savings Accounts</a></li>
+          <li><a href="accounts.html">Checking Accounts</a></li>
+          <li><a href="investing.html">Certificates of Deposit</a></li>
+          <li><a href="#">Auto Loans</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Investor Relations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Email: <a href="mailto:allybank452@gmail.com">allybank452@gmail.com</a></p>
+        <div class="social-links">
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2025 Ally Bank. Member FDIC. Equal Housing Lender.</p>
+        <div class="legal-links">
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Use</a>
+          <a href="security.html">Security</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = sessionStorage.getItem('currentUser');
+      const navLinks = document.getElementById('navLinks');
+
+      if (currentUser) {
+        navLinks.innerHTML = `
+          <li><a href="#" onclick="navigateSecure(event, 'index.html')">Home</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'accounts.html')">Accounts</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'savings.html')">Savings</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'support.html')">Support</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'dashboard.html')" class="btn-login">Dashboard</a></li>
+          <li><a href="#" id="logoutBtn" class="btn-login" style="background:#dc2626;">Logout</a></li>
+        `;
+
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+          e.preventDefault();
+          sessionStorage.removeItem('currentUser');
+          window.location.href = 'index.html';
+        });
+      } else {
+        navLinks.innerHTML = `
+          <li><a href="#" onclick="navigateSecure(event, 'index.html')">Home</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'accounts.html')">Accounts</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'savings.html')">Savings</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'support.html')">Support</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'login.html')" class="btn-login">Log In</a></li>
+        `;
+      }
+
+      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
+    });
+
+    function navigateSecure(e, url) {
+      e.preventDefault();
+      const user = sessionStorage.getItem('currentUser');
+      if (user) sessionStorage.setItem('currentUser', user);
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>

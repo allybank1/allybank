@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Savings | Ally Bank</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div class="logo">
+        <h2>Ally<span>Bank</span></h2>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <!-- DYNAMIC -->
+      </ul>
+      <div class="mobile-menu-toggle">Menu</div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="page-hero savings-hero">
+    <div class="container">
+      <h1>Earn More with High-Yield Savings</h1>
+      <p class="lead">4.20% APY — no minimums, no fees, no catch.</p>
+      <div class="rate-highlight">
+        <div class="rate">4.20<span>%</span></div>
+        <div class="rate-label">Annual Percentage Yield (APY)</div>
+      </div>
+      <a href="#" id="openSavingsBtn" class="btn-primary large">Open Savings Account</a>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="savings-features">
+    <div class="container">
+      <div class="feature-grid">
+        <div class="feature-item">
+          <h3>No Monthly Fees</h3>
+          <p>Keep every penny you earn.</p>
+        </div>
+        <div class="feature-item">
+          <h3>No Minimum Balance</h3>
+          <p>Start saving with as little as $1.</p>
+        </div>
+        <div class="feature-item">
+          <h3>FDIC Insured</h3>
+          <p>Your money is safe up to $250,000.</p>
+        </div>
+        <div class="feature-item">
+          <h3>Daily Compounding</h3>
+          <p>Watch your interest grow faster.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  <section class="comparison">
+    <div class="container">
+      <h2>How We Compare</h2>
+      <table class="rate-table">
+        <thead>
+          <tr>
+            <th>Bank</th>
+            <th>APY</th>
+            <th>Minimum</th>
+            <th>Fees</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight">
+            <td><strong>Ally Bank</strong></td>
+            <td><strong>4.20%</strong></td>
+            <td>$0</td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td>Chase</td>
+            <td>0.01%</td>
+            <td>$0</td>
+            <td>Possible</td>
+          </tr>
+          <tr>
+            <td>Bank of America</td>
+            <td>0.01%</td>
+            <td>$300</td>
+            <td>Possible</td>
+          </tr>
+          <tr>
+            <td>Capital One</td>
+            <td>4.25%</td>
+            <td>$0</td>
+            <td>None</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="disclaimer">Rates as of October 2025. APY may change.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container cta-container">
+      <h2>Start Earning Today</h2>
+      <p>Open in minutes. No paperwork. No branch visits.</p>
+      <a href="#" id="ctaOpenBtn" class="btn-primary large">Open Account Now</a>
+    </div>
+  </section>
+
+    <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-col">
+        <div class="footer-logo">
+          <h3>Ally<span>Bank</span></h3>
+          <p>Digital banking. No nonsense.</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="savings.html">Savings Accounts</a></li>
+          <li><a href="accounts.html">Checking Accounts</a></li>
+          <li><a href="investing.html">Certificates of Deposit</a></li>
+          <li><a href="#">Auto Loans</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Investor Relations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Email: <a href="mailto:allybank452@gmail.com">allybank452@gmail.com</a></p>
+        <div class="social-links">
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2025 Ally Bank. Member FDIC. Equal Housing Lender.</p>
+        <div class="legal-links">
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Use</a>
+          <a href="security.html">Security</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = sessionStorage.getItem('currentUser');
+      const navLinks = document.getElementById('navLinks');
+      const openBtn = document.getElementById('openSavingsBtn');
+      const ctaBtn = document.getElementById('ctaOpenBtn');
+
+      if (currentUser) {
+        // LOGGED IN
+        navLinks.innerHTML = `
+          <li><a href="#" onclick="navigateSecure(event, 'index.html')">Home</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'accounts.html')">Accounts</a></li>
+          <li><a href="#" class="active">Savings</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'support.html')">Support</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'dashboard.html')" class="btn-login">Dashboard</a></li>
+          <li><a href="#" id="logoutBtn" class="btn-login" style="background:#dc2626;">Logout</a></li>
+        `;
+
+        // Change buttons to go to Dashboard
+        openBtn.href = '#';
+        openBtn.onclick = (e) => { e.preventDefault(); navigateSecure(e, 'dashboard.html'); };
+        openBtn.textContent = 'Go to Dashboard';
+
+        ctaBtn.href = '#';
+        ctaBtn.onclick = (e) => { e.preventDefault(); navigateSecure(e, 'dashboard.html'); };
+        ctaBtn.textContent = 'Go to Dashboard';
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+          e.preventDefault();
+          sessionStorage.removeItem('currentUser');
+          window.location.href = 'index.html';
+        });
+      } else {
+        // NOT LOGGED IN
+        navLinks.innerHTML = `
+          <li><a href="#" onclick="navigateSecure(event, 'index.html')">Home</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'accounts.html')">Accounts</a></li>
+          <li><a href="#" class="active">Savings</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'support.html')">Support</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'login.html')" class="btn-login">Log In</a></li>
+        `;
+
+        openBtn.href = 'login.html';
+        ctaBtn.href = 'login.html';
+      }
+
+      // Mobile menu
+      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
+    });
+
+    function navigateSecure(e, url) {
+      e.preventDefault();
+      const user = sessionStorage.getItem('currentUser');
+      if (user) sessionStorage.setItem('currentUser', user);
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>

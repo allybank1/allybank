@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin | Ally Bank</title>
+  <link rel="stylesheet" href="admin-styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="screen active">
+    <div class="login-card">
+      <div class="logo">
+        <h2>Ally<span>Bank</span></h2>
+      </div>
+      <h2>Admin Portal</h2>
+      <form id="adminLoginForm">
+        <input type="text" id="adminUsername" placeholder="Username" required />
+        <input type="password" id="adminPassword" placeholder="Password" required />
+        <button type="submit" class="btn-primary">Secure Login</button>
+      </form>
+      <p class="hint">Default: <strong>admin</strong> / <strong>admin123</strong></p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="screen">
+    <div class="dashboard-wrapper">
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-inner">
+          <div>
+            <h1>Admin Dashboard</h1>
+            <p>Secure Management Console</p>
+          </div>
+          <button id="logoutBtn" class="btn-logout">Logout</button>
+        </div>
+      </header>
+
+      <!-- MAIN CONTENT -->
+      <div class="content-grid">
+        <!-- SIDEBAR -->
+        <nav class="sidebar">
+          <button class="nav-btn active" data-tab="users">Users</button>
+          <button class="nav-btn" data-tab="create">Create User</button>
+          <button class="nav-btn" data-tab="transactions">All Transactions</button>
+          <button class="nav-btn" data-tab="stats">Bank Stats</button>
+        </nav>
+
+        <!-- MAIN PANEL -->
+        <main class="panel">
+          <!-- USERS TAB -->
+          <section id="users" class="tab active">
+            <div class="panel-header">
+              <h2>Manage Users</h2>
+              <button class="btn-primary small" onclick="exportUsers()">Export CSV</button>
+            </div>
+            <div id="usersList" class="users-grid"></div>
+          </section>
+
+          <!-- CREATE USER TAB -->
+          <section id="create" class="tab">
+            <div class="panel-header">
+              <h2>Create New User</h2>
+            </div>
+            <form id="createUserForm" class="form">
+              <div class="form-grid">
+                <input type="text" placeholder="Full Name" id="newName" required />
+                <input type="text" placeholder="Username" id="newUsername" required />
+              </div>
+              <input type="email" placeholder="Email Address" id="newEmail" required />
+              <input type="tel" placeholder="Phone Number" id="newPhone" required />
+              <input type="text" placeholder="Full Address" id="newAddress" required />
+              <input type="date" placeholder="Date of Birth" id="newDOB" required />
+              <input type="number" placeholder="Initial Balance ($)" id="newBalance" min="0" step="0.01" required />
+              <input type="password" placeholder="Account Password" id="newPassword" required />
+              <div class="account-preview">
+                <p><strong>Account Number:</strong> <span id="generatedAccNum">Auto-generated</span></p>
+              </div>
+              <p class="hint">
+                PIN will be set by user on first login
+              </p>
+              <button type="submit" class="btn-primary">Create Account</button>
+            </form>
+          </section>
+
+          <!-- TRANSACTIONS TAB -->
+          <section id="transactions" class="tab">
+            <div class="panel-header">
+              <h2>All Transactions</h2>
+              <select id="filterType" onchange="loadAllTransactions()">
+                <option value="">All Types</option>
+                <option value="deposit">Deposits</option>
+                <option value="withdraw">Withdrawals</option>
+              </select>
+            </div>
+            <div id="allTransactions" class="transactions-list"></div>
+          </section>
+
+          <!-- BANK STATS TAB -->
+          <section id="stats" class="tab">
+            <div class="panel-header">
+              <h2>Bank Overview</h2>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <h3>Total Users</h3>
+                <p id="totalUsers">0</p>
+              </div>
+              <div class="stat-card">
+                <h3>Total Balance</h3>
+                <p id="totalBalance">$0.00</p>
+              </div>
+              <div class="stat-card">
+                <h3>Today's Transactions</h3>
+                <p id="todayTx">0</p>
+              </div>
+              <div class="stat-card">
+                <h3>Active Accounts</h3>
+                <p id="activeAccounts">0</p>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER MODAL -->
+  <div id="userModal" class="modal">
+    <div class="modal-box">
+      <span class="close">x</span>
+      <h2>User Profile: <span id="modalName"></span></h2>
+      <button id="editUserBtn" class="btn-primary small" style="position:absolute; top:1rem; right:4rem;">Edit User</button>
+
+      <div id="viewMode" class="info-grid">
+        <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+        <p><strong>Username:</strong> <span id="modalUsername"></span></p>
+        <p><strong>Account #:</strong> <span id="modalAccNum"></span></p>
+        <p><strong>Phone:</strong> <span id="modalPhone"></span></p>
+        <p><strong>Address:</strong> <span id="modalAddress"></span></p>
+        <p><strong>DOB:</strong> <span id="modalDOB"></span></p>
+        <p><strong>Balance:</strong> $<span id="modalBalance"></span> <button id="editBalanceBtn" class="btn-small">Edit</button></p>
+        <p><strong>PIN:</strong> <span id="modalPin">Not set</span> <button id="changePinBtn" class="btn-small">Change</button></p>
+        <p><strong>Status:</strong> <span id="modalStatus" class="badge active">Active</span></p>
+        <p><strong>Created:</strong> <input type="date" id="modalCreatedInput" style="padding:0.25rem; font-size:0.9rem; border:1px solid #ddd; border-radius:4px;"> <button id="saveCreatedBtn" class="btn-small">Save</button></p>
+      </div>
+
+      <!-- EDIT MODE -->
+      <div id="editMode" class="form" style="display:none;">
+        <h3>Edit User</h3>
+        <div class="form-grid">
+          <input type="text" id="editName" placeholder="Full Name" />
+          <input type="text" id="editUsername" placeholder="Username" />
+        </div>
+        <input type="email" id="editEmail" placeholder="Email Address" />
+        <input type="tel" id="editPhone" placeholder="Phone Number" />
+        <input type="text" id="editAddress" placeholder="Full Address" />
+        <input type="date" id="editDOB" placeholder="Date of Birth" />
+        <input type="password" id="editPassword" placeholder="New Password (leave blank to keep)" />
+        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+          <button id="saveUserBtn" class="btn-primary">Save Changes</button>
+          <button id="cancelEditBtn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+
+      <h3>Add Transaction</h3>
+      <form id="addTransactionForm" class="form-inline">
+        <select id="transType">
+          <option value="deposit">Deposit</option>
+          <option value="withdraw">Withdraw</option>
+        </select>
+        <input type="number" placeholder="Amount" id="transAmount" step="0.01" required />
+        <input type="date" id="transDate" required />
+        <input type="text" placeholder="Description" id="transDesc" />
+        <button type="submit" class="btn-primary">Add</button>
+      </form>
+
+      <h3>Transaction History</h3>
+      <div id="userTransactions" class="transactions-list"></div>
+    </div>
+  </div>
+
+  <!-- EDIT TRANSACTION MODAL -->
+  <div id="editTransactionModal" class="modal">
+    <div class="modal-box">
+      <span class="close">x</span>
+      <h2>Edit Transaction</h2>
+      <form id="editTransactionForm">
+        <div class="form-inline" style="gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+          <select id="editTransType">
+            <option value="deposit">Deposit</option>
+            <option value="withdraw">Withdraw</option>
+          </select>
+          <input type="number" id="editTransAmount" step="0.01" placeholder="Amount" required />
+          <input type="date" id="editTransDate" required />
+          <input type="text" id="editTransDesc" placeholder="Description" />
+          <button type="submit" class="btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- RECEIPT MODAL -->
+  <div id="receiptModal" class="modal">
+    <div class="modal-box">
+      <span class="close">x</span>
+      <h2>Transaction Receipt</h2>
+      <div class="receipt-body">
+        <div style="text-align:center; margin-bottom:1rem;">
+          <h3>Ally Bank</h3>
+          <p>Digital Banking Receipt</p>
+        </div>
+        <div style="line-height:1.6;">
+          <p><strong>Reference ID:</strong> <span id="receiptRef"></span></p>
+          <p><strong>Type:</strong> <span id="receiptType"></span></p>
+          <p><strong>Amount:</strong> <span id="receiptAmount"></span></p>
+          <p><strong>Date:</strong> <span id="receiptDate"></span></p>
+          <p><strong>Description:</strong> <span id="receiptDesc"></span></p>
+          <p><strong>Account:</strong> <span id="receiptAcc"></span></p>
+          <p><strong>User:</strong> <span id="receiptUser"></span></p>
+          <p><strong>Status:</strong> <span class="badge success">Completed</span></p>
+        </div>
+        <div style="text-align:center; margin-top:1.5rem;">
+          <button class="btn-primary" onclick="printReceipt()">Print</button>
+          <button class="btn-secondary" onclick="closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELETE USER CONFIRM MODAL -->
+  <div id="deleteUserModal" class="modal">
+    <div class="modal-box small">
+      <span class="close">x</span>
+      <h2>Delete User</h2>
+      <p>Are you sure you want to <strong>permanently delete</strong> this user?</p>
+      <p><strong>Name:</strong> <span id="deleteUserName"></span></p>
+      <p><strong>Account:</strong> <span id="deleteUserAcc"></span></p>
+      <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+        <button id="confirmDeleteBtn" class="btn-danger">Delete</button>
+        <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // GLOBAL DATA
+    let USERS = [];
+    let CURRENT_ADMIN = null;
+    let SELECTED_USER = null;
+    let EDITING_TX = null;
+    let SELECTED_TX = null;
+
+    // Admin credentials
+    const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin123' };
+
+    // Generate 10-digit account number
+    function generateAccountNumber() {
+      return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+    }
+
+    // Generate Reference ID
+    function generateRefId() {
+      return 'TX' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 3).toUpperCase();
+    }
+
+    // Login
+    document.getElementById('adminLoginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const username = document.getElementById('adminUsername').value.trim();
+      const password = document.getElementById('adminPassword').value;
+
+      if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+        CURRENT_ADMIN = { username };
+        document.getElementById('loginScreen').classList.remove('active');
+        document.getElementById('dashboard').classList.add('active');
+        loadAdminData();
+      } else {
+        alert('Invalid credentials');
+      }
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      CURRENT_ADMIN = null;
+      document.getElementById('dashboard').classList.remove('active');
+      document.getElementById('loginScreen').classList.add('active');
+      document.getElementById('adminLoginForm').reset();
+    });
+
+    // Load admin data
+    function loadAdminData() {
+      USERS = JSON.parse(localStorage.getItem('users') || '[]');
+      loadUsersTab();
+      loadStats();
+      generateAccountPreview();
+    }
+
+    // === USERS TAB ===
+    function loadUsersTab() {
+      const container = document.getElementById('usersList');
+      if (USERS.length === 0) {
+        container.innerHTML = '<p class="no-data">No users yet.</p>';
+        return;
+      }
+
+      container.innerHTML = USERS.map(user => `
+        <div class="user-card">
+          <div class="user-avatar">
+            <span>${user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2)}</span>
+          </div>
+          <div class="user-info" onclick="openUserModal('${user.id}')">
+            <h4>${user.name}</h4>
+            <p>${user.email}</p>
+            <p class="acc-num">#${user.accountNumber}</p>
+          </div>
+          <div class="user-balance">$${parseFloat(user.balance).toFixed(2)}</div>
+          <button class="btn-delete" onclick="event.stopPropagation(); openDeleteUser('${user.id}')">Delete</button>
+        </div>
+      `).join('');
+    }
+
+    // === DELETE USER ===
+    window.openDeleteUser = function(userId) {
+      event.stopPropagation();
+      const user = USERS.find(u => u.id === userId);
+      if (!user) return;
+
+      SELECTED_USER = user;
+      document.getElementById('deleteUserName').textContent = user.name;
+      document.getElementById('deleteUserAcc').textContent = user.accountNumber;
+      document.getElementById('deleteUserModal').classList.add('active');
+    };
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+      USERS = USERS.filter(u => u.id !== SELECTED_USER.id);
+      localStorage.setItem('users', JSON.stringify(USERS));
+      document.getElementById('deleteUserModal').classList.remove('active');
+      loadUsersTab();
+      loadStats();
+      alert('User deleted permanently');
+    });
+
+    // === CREATE USER TAB ===
+    function generateAccountPreview() {
+      document.getElementById('generatedAccNum').textContent = generateAccountNumber();
+    }
+
+    document.getElementById('createUserForm').addEventListener('submit', e => {
+      e.preventDefault();
+
+      const name = document.getElementById('newName').value.trim();
+      const username = document.getElementById('newUsername').value.trim();
+      const email = document.getElementById('newEmail').value.trim().toLowerCase();
+      const phone = document.getElementById('newPhone').value.trim();
+      const address = document.getElementById('newAddress').value.trim();
+      const dob = document.getElementById('newDOB').value;
+      const balance = parseFloat(document.getElementById('newBalance').value);
+      const password = document.getElementById('newPassword').value;
+
+      if (USERS.some(u => u.email === email || u.accountNumber === document.getElementById('generatedAccNum').textContent)) {
+        alert('User with this email or account number already exists');
+        return;
+      }
+
+      const newUser = {
+        id: Date.now().toString(),
+        name,
+        username,
+        email,
+        password,
+        accountNumber: document.getElementById('generatedAccNum').textContent,
+        balance,
+        pin: null,
+        transactions: [],
+        phone,
+        address,
+        dob,
+        createdAt: new Date().toISOString()
+      };
+
+      USERS.push(newUser);
+      localStorage.setItem('users', JSON.stringify(USERS));
+
+      alert(`User ${name} created successfully!`);
+      document.getElementById('createUserForm').reset();
+      generateAccountPreview();
+      loadUsersTab();
+      loadStats();
+    });
+
+    // === USER MODAL ===
+    window.openUserModal = function(userId) {
+      SELECTED_USER = USERS.find(u => u.id === userId);
+      if (!SELECTED_USER) return;
+
+      // VIEW MODE
+      document.getElementById('modalName').textContent = SELECTED_USER.name;
+      document.getElementById('modalEmail').textContent = SELECTED_USER.email;
+      document.getElementById('modalUsername').textContent = SELECTED_USER.username || 'N/A';
+      document.getElementById('modalAccNum').textContent = SELECTED_USER.accountNumber;
+      document.getElementById('modalPhone').textContent = SELECTED_USER.phone || 'Not set';
+      document.getElementById('modalAddress').textContent = SELECTED_USER.address || 'Not set';
+      document.getElementById('modalDOB').textContent = SELECTED_USER.dob ? new Date(SELECTED_USER.dob).toLocaleDateString() : 'Not set';
+      document.getElementById('modalBalance').textContent = parseFloat(SELECTED_USER.balance).toFixed(2);
+      document.getElementById('modalPin').textContent = SELECTED_USER.pin ? '••••' : 'Not set';
+      document.getElementById('modalCreatedInput').value = SELECTED_USER.createdAt.split('T')[0];
+
+      // EDIT MODE FIELDS
+      document.getElementById('editName').value = SELECTED_USER.name;
+      document.getElementById('editUsername').value = SELECTED_USER.username;
+      document.getElementById('editEmail').value = SELECTED_USER.email;
+      document.getElementById('editPhone').value = SELECTED_USER.phone || '';
+      document.getElementById('editAddress').value = SELECTED_USER.address || '';
+      document.getElementById('editDOB').value = SELECTED_USER.dob || '';
+
+      loadUserTransactions();
+      document.getElementById('userModal').classList.add('active');
+      document.getElementById('viewMode').style.display = 'block';
+      document.getElementById('editMode').style.display = 'none';
+    };
+
+    // === SWITCH TO EDIT MODE ===
+    document.getElementById('editUserBtn').addEventListener('click', () => {
+      document.getElementById('viewMode').style.display = 'none';
+      document.getElementById('editMode').style.display = 'block';
+    });
+
+    // === CANCEL EDIT ===
+    document.getElementById('cancelEditBtn').addEventListener('click', () => {
+      document.getElementById('editMode').style.display = 'none';
+      document.getElementById('viewMode').style.display = 'block';
+    });
+
+    // === SAVE USER EDIT ===
+    document.getElementById('saveUserBtn').addEventListener('click', () => {
+      const name = document.getElementById('editName').value.trim();
+      const username = document.getElementById('editUsername').value.trim();
+      const email = document.getElementById('editEmail').value.trim().toLowerCase();
+      const phone = document.getElementById('editPhone').value.trim();
+      const address = document.getElementById('editAddress').value.trim();
+      const dob = document.getElementById('editDOB').value;
+      const password = document.getElementById('editPassword').value;
+
+      if (!name || !username || !email) {
+        alert('Name, Username, and Email are required');
+        return;
+      }
+
+      if (USERS.some(u => u.id !== SELECTED_USER.id && (u.email === email || u.username === username))) {
+        alert('Email or Username already taken');
+        return;
+      }
+
+      SELECTED_USER.name = name;
+      SELECTED_USER.username = username;
+      SELECTED_USER.email = email;
+      SELECTED_USER.phone = phone;
+      SELECTED_USER.address = address;
+      SELECTED_USER.dob = dob;
+      if (password) SELECTED_USER.password = password;
+
+      localStorage.setItem('users', JSON.stringify(USERS));
+      loadUsersTab();
+      loadStats();
+
+      // Refresh view
+      document.getElementById('modalName').textContent = name;
+      document.getElementById('modalEmail').textContent = email;
+      document.getElementById('modalUsername').textContent = username;
+      document.getElementById('modalPhone').textContent = phone || 'Not set';
+      document.getElementById('modalAddress').textContent = address || 'Not set';
+      document.getElementById('modalDOB').textContent = dob ? new Date(dob).toLocaleDateString() : 'Not set';
+
+      document.getElementById('editMode').style.display = 'none';
+      document.getElementById('viewMode').style.display = 'block';
+
+      alert('User updated successfully');
+    });
+
+    function loadUserTransactions() {
+      const list = document.getElementById('userTransactions');
+      if (SELECTED_USER.transactions && SELECTED_USER.transactions.length > 0) {
+        const sorted = [...SELECTED_USER.transactions].sort((a, b) => b.timestamp - a.timestamp);
+        list.innerHTML = sorted.map((t, idx) => `
+          <div class="transaction-item ${t.type}" style="cursor:pointer; position:relative;">
+            <div style="flex:1;" onclick="openReceipt('${SELECTED_USER.id}', ${idx})">
+              <strong>${t.type === 'deposit' ? '+' : '-'}$${t.amount.toFixed(2)}</strong>
+              <p>${t.desc}</p>
+              <small>Ref: ${t.refId || 'N/A'}</small>
+            </div>
+            <small style="margin-left:auto;">${new Date(t.date).toLocaleDateString()}</small>
+            <button class="btn-small" onclick="event.stopPropagation(); openEditTransaction('${SELECTED_USER.id}', ${idx})">Edit</button>
+          </div>
+        `).join('');
+      } else {
+        list.innerHTML = '<p class="no-data">No transactions</p>';
+      }
+    }
+
+    // === RECEIPT MODAL ===
+    window.openReceipt = function(userId, txIndex) {
+      event.stopPropagation();
+      SELECTED_USER = USERS.find(u => u.id === userId);
+      SELECTED_TX = SELECTED_USER.transactions[txIndex];
+
+      if (!SELECTED_TX.refId) {
+        SELECTED_TX.refId = generateRefId();
+        localStorage.setItem('users', JSON.stringify(USERS));
+      }
+
+      document.getElementById('receiptRef').textContent = SELECTED_TX.refId;
+      document.getElementById('receiptType').textContent = SELECTED_TX.type.charAt(0).toUpperCase() + SELECTED_TX.type.slice(1);
+      document.getElementById('receiptAmount').textContent = (SELECTED_TX.type === 'deposit' ? '+' : '-') + '$' + SELECTED_TX.amount.toFixed(2);
+      document.getElementById('receiptDate').textContent = new Date(SELECTED_TX.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('receiptDesc').textContent = SELECTED_TX.desc;
+      document.getElementById('receiptAcc').textContent = SELECTED_USER.accountNumber;
+      document.getElementById('receiptUser').textContent = SELECTED_USER.name;
+
+      document.getElementById('receiptModal').classList.add('active');
+    };
+
+    window.printReceipt = function() {
+      const printContent = document.querySelector('.receipt-body').innerHTML;
+      const win = window.open('', '', 'width=800,height=600');
+      win.document.write(`
+        <html><head><title>Receipt - ${SELECTED_TX.refId}</title></head>
+        <body style="font-family:Arial,sans-serif;padding:2rem;">${printContent}</body>
+        </html>
+      `);
+      win.document.close();
+      win.print();
+    };
+
+    // === EDIT TRANSACTION MODAL ===
+    window.openEditTransaction = function(userId, txIndex) {
+      event.stopPropagation();
+      SELECTED_USER = USERS.find(u => u.id === userId);
+      EDITING_TX = SELECTED_USER.transactions[txIndex];
+
+      document.getElementById('editTransType').value = EDITING_TX.type;
+      document.getElementById('editTransAmount').value = EDITING_TX.amount;
+      document.getElementById('editTransDate').value = EDITING_TX.date;
+      document.getElementById('editTransDesc').value = EDITING_TX.desc;
+
+      document.getElementById('editTransactionModal').classList.add('active');
+    };
+
+    document.getElementById('editTransactionForm').addEventListener('submit', e => {
+      e.preventDefault();
+
+      const oldAmount = EDITING_TX.amount;
+      const oldType = EDITING_TX.type;
+      const newAmount = parseFloat(document.getElementById('editTransAmount').value);
+      const newType = document.getElementById('editTransType').value;
+
+      if (oldType === 'deposit') {
+        SELECTED_USER.balance -= oldAmount;
+      } else {
+        SELECTED_USER.balance += oldAmount;
+      }
+
+      if (newType === 'deposit') {
+        SELECTED_USER.balance += newAmount;
+      } else {
+        SELECTED_USER.balance -= newAmount;
+      }
+
+      EDITING_TX.type = newType;
+      EDITING_TX.amount = newAmount;
+      EDITING_TX.date = document.getElementById('editTransDate').value;
+      EDITING_TX.desc = document.getElementById('editTransDesc').value || (newType === 'deposit' ? 'Admin Deposit' : 'Admin Withdrawal');
+      EDITING_TX.timestamp = Date.now();
+
+      localStorage.setItem('users', JSON.stringify(USERS));
+      document.getElementById('editTransactionModal').classList.remove('active');
+      loadUserTransactions();
+      loadUsersTab();
+      loadStats();
+      alert('Transaction updated');
+    });
+
+    // === ADD TRANSACTION ===
+    document.getElementById('addTransactionForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const type = document.getElementById('transType').value;
+      const amount = parseFloat(document.getElementById('transAmount').value);
+      const date = document.getElementById('transDate').value;
+      const desc = document.getElementById('transDesc').value || (type === 'deposit' ? 'Admin Deposit' : 'Admin Withdrawal');
+
+      if (type === 'withdraw' && SELECTED_USER.balance < amount) {
+        alert('Insufficient funds');
+        return;
+      }
+
+      SELECTED_USER.balance = type === 'deposit' 
+        ? SELECTED_USER.balance + amount 
+        : SELECTED_USER.balance - amount;
+
+      const refId = generateRefId();
+      SELECTED_USER.transactions.unshift({
+        type,
+        amount,
+        date,
+        desc,
+        timestamp: Date.now(),
+        refId
+      });
+
+      localStorage.setItem('users', JSON.stringify(USERS));
+      loadUserTransactions();
+      loadUsersTab();
+      loadStats();
+      alert(`$${amount} ${type}ed. Ref: ${refId}`);
+    });
+
+    // === EDIT BALANCE, PIN, CREATED ===
+    document.getElementById('editBalanceBtn').addEventListener('click', () => {
+      const newBal = prompt('Enter new balance:', SELECTED_USER.balance);
+      if (newBal !== null && !isNaN(newBal) && newBal >= 0) {
+        SELECTED_USER.balance = parseFloat(newBal);
+        localStorage.setItem('users', JSON.stringify(USERS));
+        document.getElementById('modalBalance').textContent = parseFloat(SELECTED_USER.balance).toFixed(2);
+        loadUsersTab();
+        loadStats();
+        alert('Balance updated');
+      }
+    });
+
+    document.getElementById('changePinBtn').addEventListener('click', () => {
+      const newPin = prompt('Enter new 4-digit PIN:');
+      if (newPin && /^\d{4}$/.test(newPin)) {
+        SELECTED_USER.pin = newPin;
+        localStorage.setItem('users', JSON.stringify(USERS));
+        alert('PIN updated');
+      } else if (newPin) {
+        alert('PIN must be exactly 4 digits');
+      }
+    });
+
+    document.getElementById('saveCreatedBtn').addEventListener('click', () => {
+      const newDate = document.getElementById('modalCreatedInput').value;
+      if (newDate) {
+        SELECTED_USER.createdAt = new Date(newDate).toISOString();
+        localStorage.setItem('users', JSON.stringify(USERS));
+        alert('Account creation date updated');
+      }
+    });
+
+    // === CLOSE MODALS ===
+    document.querySelectorAll('.modal .close').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.closest('.modal').classList.remove('active');
+      });
+    });
+
+    // === ALL TRANSACTIONS TAB ===
+    function loadAllTransactions() {
+      const container = document.getElementById('allTransactions');
+      const filter = document.getElementById('filterType').value;
+      let allTx = [];
+
+      USERS.forEach(user => {
+        if (user.transactions) {
+          user.transactions.forEach((tx, idx) => {
+            allTx.push({ ...tx, userName: user.name, accountNumber: user.accountNumber, userId: user.id, txIndex: idx });
+          });
+        }
+      });
+
+      if (filter) allTx = allTx.filter(tx => tx.type === filter);
+      allTx.sort((a, b) => b.timestamp - a.timestamp);
+
+      if (allTx.length === 0) {
+        container.innerHTML = '<p class="no-data">No transactions</p>';
+        return;
+      }
+
+      container.innerHTML = allTx.map(tx => `
+        <div class="transaction-item ${tx.type}" style="cursor:pointer; position:relative;">
+          <div style="flex:1;" onclick="openReceipt('${tx.userId}', ${tx.txIndex})">
+            <strong>${tx.type === 'deposit' ? '+' : '-'}$${tx.amount.toFixed(2)}</strong>
+            <p>${tx.desc}</p>
+            <small><strong>${tx.userName}</strong> (#${tx.accountNumber}) | Ref: ${tx.refId || 'N/A'}</small>
+          </div>
+          <small style="margin-left:auto;">${new Date(tx.date).toLocaleDateString()}</small>
+          <button class="btn-small" onclick="event.stopPropagation(); openEditTransaction('${tx.userId}', ${tx.txIndex})">Edit</button>
+        </div>
+      `).join('');
+    }
+
+    // === STATS TAB ===
+    function loadStats() {
+      const today = new Date().toISOString().split('T')[0];
+      let todayTx = 0;
+      let totalBalance = 0;
+
+      USERS.forEach(user => {
+        totalBalance += parseFloat(user.balance) || 0;
+        if (user.transactions) {
+          user.transactions.forEach(tx => {
+            if (tx.date === today) todayTx++;
+          });
+        }
+      });
+
+      document.getElementById('totalUsers').textContent = USERS.length;
+      document.getElementById('totalBalance').textContent = `$${totalBalance.toFixed(2)}`;
+      document.getElementById('todayTx').textContent = todayTx;
+      document.getElementById('activeAccounts').textContent = USERS.filter(u => u.pin).length;
+    }
+
+    // === EXPORT CSV ===
+    window.exportUsers = function() {
+      if (USERS.length === 0) return alert('No users to export');
+
+      const headers = ['Name', 'Email', 'Phone', 'Address', 'DOB', 'Account #', 'Balance', 'Created'];
+      const rows = USERS.map(u => [
+        u.name,
+        u.email,
+        u.phone || '',
+        u.address || '',
+        u.dob || '',
+        u.accountNumber,
+        u.balance,
+        new Date(u.createdAt).toLocaleDateString()
+      ]);
+
+      let csv = headers.join(',') + '\n';
+      rows.forEach(row => csv += row.join(',') + '\n');
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `allybank_users_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+    };
+
+    // === TAB NAVIGATION ===
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+
+        if (btn.dataset.tab === 'transactions') loadAllTransactions();
+      });
+    });
+
+    // Generate new account number on form reset/focus
+    document.getElementById('createUserForm').addEventListener('reset', generateAccountPreview);
+    document.getElementById('newName').addEventListener('focus', generateAccountPreview);
+  </script>
+</body>
+</html>

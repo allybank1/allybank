@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Security | Ally Bank</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div class="logo">
+        <h2>Ally<span>Bank</span></h2>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <!-- DYNAMIC -->
+      </ul>
+      <div class="mobile-menu-toggle">Menu</div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-hero security-hero">
+    <div class="container">
+      <h1>Your Security is Our Priority</h1>
+      <p class="lead">Bank-level protection for your money and data.</p>
+    </div>
+  </section>
+
+  <!-- Security Features -->
+  <section class="security-features">
+    <div class="container">
+      <h2>How We Protect You</h2>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <h3>FDIC Insured</h3>
+          <p>Your deposits are insured up to $250,000 per depositor.</p>
+        </div>
+        <div class="feature-item">
+          <h3>256-bit Encryption</h3>
+          <p>All data is encrypted in transit and at rest.</p>
+        </div>
+        <div class="feature-item">
+          <h3>Multi-Factor Authentication</h3>
+          <p>Add an extra layer with SMS or app-based codes.</p>
+        </div>
+        <div class="feature-item">
+          <h3>Fraud Monitoring</h3>
+          <p>24/7 AI-powered detection of suspicious activity.</p>
+        </div>
+        <div class="feature-item">
+          <h3>Secure PIN Login</h3>
+          <p>4-digit PIN with lockout after 5 failed attempts.</p>
+        </div>
+        <div class="feature-item">
+          <h3>Zero Liability</h3>
+          <p>You won't be held responsible for unauthorized transactions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tips -->
+  <section class="security-tips">
+    <div class="container">
+      <h2>Stay Safe Online</h2>
+      <div class="tips-grid">
+        <div class="tip">
+          <strong>Strong PIN</strong>: Use a unique 4-digit code.
+        </div>
+        <div class="tip">
+          <strong>Enable Alerts</strong>: Get notified of every transaction.
+        </div>
+        <div class="tip">
+          <strong>Public Wi-Fi</strong>: Avoid banking on unsecured networks.
+        </div>
+        <div class="tip">
+          <strong>Phishing</strong>: We never ask for your PIN via email.
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-col">
+        <div class="footer-logo">
+          <h3>Ally<span>Bank</span></h3>
+          <p>Digital banking. No nonsense.</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="savings.html">Savings Accounts</a></li>
+          <li><a href="accounts.html">Checking Accounts</a></li>
+          <li><a href="investing.html">Certificates of Deposit</a></li>
+          <li><a href="#">Auto Loans</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Investor Relations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Email: <a href="mailto:allybank452@gmail.com">allybank452@gmail.com</a></p>
+        <div class="social-links">
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2025 Ally Bank. Member FDIC. Equal Housing Lender.</p>
+        <div class="legal-links">
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Use</a>
+          <a href="security.html">Security</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = sessionStorage.getItem('currentUser');
+      const navLinks = document.getElementById('navLinks');
+
+      if (currentUser) {
+        // Logged in
+        navLinks.innerHTML = `
+          <li><a href="#" onclick="navigateSecure(event, 'index.html')">Home</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'accounts.html')">Accounts</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'savings.html')">Savings</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'support.html')">Support</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'dashboard.html')" class="btn-login">Dashboard</a></li>
+          <li><a href="#" id="logoutBtn" class="btn-login" style="background:#dc2626;">Logout</a></li>
+        `;
+
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+          e.preventDefault();
+          sessionStorage.removeItem('currentUser');
+          window.location.href = 'index.html';
+        });
+      } else {
+        // Not logged in
+        navLinks.innerHTML = `
+          <li><a href="#" onclick="navigateSecure(event, 'index.html')">Home</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'accounts.html')">Accounts</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'savings.html')">Savings</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'support.html')">Support</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'login.html')" class="btn-login">Log In</a></li>
+        `;
+      }
+
+      // Mobile menu
+      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
+    });
+
+    function navigateSecure(e, url) {
+      e.preventDefault();
+      const user = sessionStorage.getItem('currentUser');
+      if (user) sessionStorage.setItem('currentUser', user);
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>

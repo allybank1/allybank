@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Accounts | Ally Bank</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div class="logo">
+        <h2>Ally<span>Bank</span></h2>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <!-- DYNAMIC -->
+      </ul>
+      <div class="mobile-menu-toggle">Menu</div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="container">
+      <h1>Your Accounts</h1>
+      <p>Manage all your Ally Bank accounts in one place.</p>
+    </div>
+  </section>
+
+  <!-- Accounts Grid -->
+  <section class="accounts-section">
+    <div class="container">
+      <div class="account-types">
+        <div class="account-card">
+          <div class="account-icon">Wallet</div>
+          <h3>Checking Account</h3>
+          <p>No monthly fees. Unlimited transactions.</p>
+          <a href="#" id="checkingBtn" class="btn-secondary">View Details</a>
+        </div>
+        <div class="account-card">
+          <div class="account-icon">Piggy Bank</div>
+          <h3>High-Yield Savings</h3>
+          <p>Earn 4.20% APY with no minimums.</p>
+          <a href="#" id="savingsBtn" class="btn-secondary">Open Now</a>
+        </div>
+        <div class="account-card">
+          <div class="account-icon">Lock</div>
+          <h3>Certificates of Deposit</h3>
+          <p>Lock in great rates for guaranteed returns.</p>
+          <a href="#" id="cdsBtn" class="btn-secondary">Explore CDs</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features-alt">
+    <div class="container">
+      <h2>Why Bank with Ally?</h2>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <h4>No Hidden Fees</h4>
+          <p>We believe in transparency — no surprises.</p>
+        </div>
+        <div class="feature-item">
+          <h4>24/7 Support</h4>
+          <p>Live help whenever you need it.</p>
+        </div>
+        <div class="feature-item">
+          <h4>Mobile Check Deposit</h4>
+          <p>Deposit checks with a snap.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-col">
+        <div class="footer-logo">
+          <h3>Ally<span>Bank</span></h3>
+          <p>Digital banking. No nonsense.</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="savings.html">Savings Accounts</a></li>
+          <li><a href="accounts.html">Checking Accounts</a></li>
+          <li><a href="investing.html">Certificates of Deposit</a></li>
+          <li><a href="#">Auto Loans</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Investor Relations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Email: <a href="mailto:allybank452@gmail.com">allybank452@gmail.com</a></p>
+        <div class="social-links">
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2025 Ally Bank. Member FDIC. Equal Housing Lender.</p>
+        <div class="legal-links">
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Use</a>
+          <a href="security.html">Security</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = sessionStorage.getItem('currentUser');
+      const navLinks = document.getElementById('navLinks');
+
+      // Buttons
+      const checkingBtn = document.getElementById('checkingBtn');
+      const savingsBtn = document.getElementById('savingsBtn');
+      const cdsBtn = document.getElementById('cdsBtn');
+
+      if (currentUser) {
+        // LOGGED IN
+        navLinks.innerHTML = `
+          <li><a href="#" onclick="navigateSecure(event, 'index.html')">Home</a></li>
+          <li><a href="#" class="active">Accounts</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'savings.html')">Savings</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'support.html')">Support</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'dashboard.html')" class="btn-login">Dashboard</a></li>
+          <li><a href="#" id="logoutBtn" class="btn-login" style="background:#dc2626;">Logout</a></li>
+        `;
+
+        // Change button behavior
+        [checkingBtn, savingsBtn, cdsBtn].forEach(btn => {
+          btn.href = '#';
+          btn.onclick = (e) => { e.preventDefault(); navigateSecure(e, 'dashboard.html'); };
+          btn.textContent = 'Go to Dashboard';
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+          e.preventDefault();
+          sessionStorage.removeItem('currentUser');
+          window.location.href = 'index.html';
+        });
+      } else {
+        // NOT LOGGED IN
+        navLinks.innerHTML = `
+          <li><a href="#" onclick="88navigateSecure(event, 'index.html')">Home</a></li>
+          <li><a href="#" class="active">Accounts</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'savings.html')">Savings</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'support.html')">Support</a></li>
+          <li><a href="#" onclick="navigateSecure(event, 'login.html')" class="btn-login">Log In</a></li>
+        `;
+
+        // Keep original links
+        checkingBtn.href = 'login.html';
+        savingsBtn.href = 'login.html';
+        cdsBtn.href = 'login.html';
+      }
+
+      // Mobile menu
+      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
+    });
+
+    function navigateSecure(e, url) {
+      e.preventDefault();
+      const user = sessionStorage.getItem('currentUser');
+      if (user) sessionStorage.setItem('currentUser', user);
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>
