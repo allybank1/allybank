@@ -1,0 +1,8 @@
+[build]
+  publish = "public"
+  command = "npm run build"
+
+[[plugins]]
+  package = "@netlify/plugin-inject-env"
+  [plugins.inputs]
+    env_file = ".env"
