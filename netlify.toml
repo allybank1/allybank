@@ -1,8 +1,6 @@
 [build]
   publish = "public"
-  command = "npm run build"
+  command = "" # Remove npm run build since you’re uploading static files
 
 [[plugins]]
   package = "@netlify/plugin-inject-env"
-  [plugins.inputs]
-    env_file = ".env"
