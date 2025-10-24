@@ -6,6 +6,18 @@
   <title>Support | Ally Bank</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Inject Firebase config as environment variables -->
+  <script>
+    window.env = {
+      FIREBASE_API_KEY: "AIzaSyA5r_nrSgK7lEZdG52tqLZZBh5fnQHz9ew",
+      FIREBASE_AUTH_DOMAIN: "allybank-478ad.firebaseapp.com",
+      FIREBASE_PROJECT_ID: "allybank-478ad",
+      FIREBASE_STORAGE_BUCKET: "allybank-478ad.firebasestorage.app",
+      FIREBASE_MESSAGING_SENDER_ID: "805352082325",
+      FIREBASE_APP_ID: "1:805352082325:web:90cf70bcfd1a057f4f449c",
+      FIREBASE_MEASUREMENT_ID: "G-GPRQK6L99L"
+    };
+  </script>
 </head>
 <body>
   <!-- Navigation -->
@@ -118,8 +130,7 @@
       <div class="footer-col">
         <h4>Contact</h4>
         <p>Email: <a href="mailto:allybank452@gmail.com">allybank452@gmail.com</a></p>
-        <div class="social-links">
-        </div>
+        <div class="social-links"></div>
       </div>
     </div>
     <div class="footer-bottom">
@@ -134,59 +145,83 @@
     </div>
   </footer>
 
-  <script>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: window.env.FIREBASE_API_KEY,
+      authDomain: window.env.FIREBASE_AUTH_DOMAIN,
+      projectId: window.env.FIREBASE_PROJECT_ID,
+      storageBucket: window.env.FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: window.env.FIREBASE_MESSAGING_SENDER_ID,
+      appId: window.env.FIREBASE_APP_ID,
+      measurementId: window.env.FIREBASE_MEASUREMENT_ID
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
     document.addEventListener('DOMContentLoaded', () => {
-      const currentUser = sessionStorage.getItem('currentUser');
       const navLinks = document.getElementById('navLinks');
       const secureMsgLink = document.getElementById('secureMessageLink');
 
-      if (currentUser) {
-        // LOGGED IN
-        navLinks.innerHTML = `
-          <li><a href="#" onclick="navigateSecure(event, 'index.html')">Home</a></li>
-          <li><a href="#" onclick="navigateSecure(event, 'accounts.html')">Accounts</a></li>
-          <li><a href="#" onclick="navigateSecure(event, 'savings.html')">Savings</a></li>
-          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
-          <li><a href="#" class="active">Support</a></li>
-          <li><a href="#" onclick="navigateSecure(event, 'dashboard.html')" class="btn-login">Dashboard</a></li>
-          <li><a href="#" id="logoutBtn" class="btn-login" style="background:#dc2626;">Logout</a></li>
-        `;
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // LOGGED IN
+          navLinks.innerHTML = `
+            <li><a href="index.html">Home</a></li>
+            <li><a href="accounts.html">Accounts</a></li>
+            <li><a href="savings.html">Savings</a></li>
+            <li><a href="investing.html">Investing</a></li>
+            <li><a href="support.html" class="active">Support</a></li>
+            <li><a href="dashboard.html" class="btn-login">Dashboard</a></li>
+            <li><a href="#" id="logoutBtn" class="btn-login" style="background:#dc2626;">Logout</a></li>
+          `;
 
-        secureMsgLink.href = '#';
-        secureMsgLink.onclick = (e) => { e.preventDefault(); navigateSecure(e, 'dashboard.html'); };
-        secureMsgLink.textContent = 'Go to Dashboard';
+          secureMsgLink.href = 'dashboard.html';
+          secureMsgLink.textContent = 'Go to Dashboard';
 
-        document.getElementById('logoutBtn').addEventListener('click', (e) => {
-          e.preventDefault();
-          sessionStorage.removeItem('currentUser');
-          window.location.href = 'index.html';
+          document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+              await signOut(auth);
+              window.location.href = 'index.html';
+            } catch (error) {
+              console.error('Logout error:', error);
+              alert('Failed to log out: ' + error.message);
+            }
+          });
+        } else {
+          // NOT LOGGED IN
+          navLinks.innerHTML = `
+            <li><a href="index.html">Home</a></li>
+            <li><a href="accounts.html">Accounts</a></li>
+            <li><a href="savings.html">Savings</a></li>
+            <li><a href="investing.html">Investing</a></li>
+            <li><a href="support.html" class="active">Support</a></li>
+            <li><a href="login.html" class="btn-login">Log In</a></li>
+          `;
+
+          secureMsgLink.href = 'login.html';
+        }
+
+        // Mobile menu
+        document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
+          navLinks.classList.toggle('active');
         });
-      } else {
-        // NOT LOGGED IN
-        navLinks.innerHTML = `
-          <li><a href="#" onclick="navigateSecure(event, 'index.html')">Home</a></li>
-          <li><a href="#" onclick="navigateSecure(event, 'accounts.html')">Accounts</a></li>
-          <li><a href="#" onclick="navigateSecure(event, 'savings.html')">Savings</a></li>
-          <li><a href="#" onclick="navigateSecure(event, 'investing.html')">Investing</a></li>
-          <li><a href="#" class="active">Support</a></li>
-          <li><a href="#" onclick="navigateSecure(event, 'login.html')" class="btn-login">Log In</a></li>
-        `;
 
-        secureMsgLink.href = 'login.html';
-      }
-
-      // Mobile menu
-      document.querySelector('.mobile-menu-toggle').addEventListener('click', () => {
-        navLinks.classList.toggle('active');
+        // Close mobile menu on link click
+        navLinks.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+          });
+        });
       });
     });
-
-    function navigateSecure(e, url) {
-      e.preventDefault();
-      const user = sessionStorage.getItem('currentUser');
-      if (user) sessionStorage.setItem('currentUser', user);
-      window.location.href = url;
-    }
   </script>
 </body>
 </html>
