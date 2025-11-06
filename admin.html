@@ -202,6 +202,40 @@
     </div>
   </div>
 
+  <!-- EDIT BALANCE MODAL -->
+  <div id="editBalanceModal" class="modal">
+    <div class="modal-box">
+      <span class="close">x</span>
+      <h2>Edit Balance</h2>
+      <form id="editBalanceForm">
+        <div class="input-group">
+          <label>New Balance ($)</label>
+          <input type="number" id="newBalanceInput" step="0.01" min="0" placeholder="0.00" required />
+        </div>
+        <button type="submit" class="btn-primary full">Update Balance</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- CHANGE PIN MODAL -->
+  <div id="changePinModal" class="modal">
+    <div class="modal-box">
+      <span class="close">x</span>
+      <h2>Change User PIN</h2>
+      <form id="changePinForm">
+        <div class="input-group">
+          <label>New 4-Digit PIN</label>
+          <input type="password" id="adminNewPin" maxlength="4" placeholder="••••" required />
+        </div>
+        <div class="input-group">
+          <label>Confirm PIN</label>
+          <input type="password" id="adminConfirmPin" maxlength="4" placeholder="••••" required />
+        </div>
+        <button type="submit" class="btn-primary full">Set PIN</button>
+      </form>
+    </div>
+  </div>
+
   <!-- EDIT TRANSACTION MODAL -->
   <div id="editTransactionModal" class="modal">
     <div class="modal-box">
@@ -332,7 +366,7 @@
       loadUsersTab();
       loadStats();
       generateAccountPreview();
-      loadPendingTransactions(); // Load pending on start
+      loadPendingTransactions();
     }
 
     // PENDING MODE SWITCH
@@ -490,6 +524,31 @@
       document.getElementById('userModal').classList.add('active');
       document.getElementById('viewMode').style.display = 'block';
       document.getElementById('editMode').style.display = 'none';
+
+      // Reset modals
+      document.getElementById('newBalanceInput').value = '';
+      document.getElementById('adminNewPin').value = '';
+      document.getElementById('adminConfirmPin').value = '';
+
+      // === SAVE CREATED DATE ===
+      const saveCreatedBtn = document.getElementById('saveCreatedBtn');
+      saveCreatedBtn.onclick = async () => {
+        const newDate = document.getElementById('modalCreatedInput').value;
+        if (!newDate) return alert('Please select a valid date');
+
+        try {
+          const newCreatedAt = new Date(newDate).toISOString();
+          await updateDoc(doc(db, 'users', SELECTED_USER.id), { createdAt: newCreatedAt });
+          
+          SELECTED_USER.createdAt = newCreatedAt;
+          USERS = USERS.map(u => u.id === SELECTED_USER.id ? { ...u, createdAt: newCreatedAt } : u);
+
+          alert('Created date updated successfully!');
+          loadUsersTab(); // Refresh user list
+        } catch (err) {
+          alert('Failed to update date: ' + err.message);
+        }
+      };
     };
 
     document.getElementById('editUserBtn').addEventListener('click', () => {
@@ -548,6 +607,57 @@
       }
     });
 
+    // === EDIT BALANCE BUTTON ===
+    document.getElementById('editBalanceBtn').addEventListener('click', () => {
+      document.getElementById('newBalanceInput').value = SELECTED_USER.balance;
+      document.getElementById('editBalanceModal').classList.add('active');
+    });
+
+    document.getElementById('editBalanceForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newBalance = parseFloat(document.getElementById('newBalanceInput').value);
+      if (isNaN(newBalance) || newBalance < 0) return alert('Enter valid balance');
+
+      try {
+        await updateDoc(doc(db, 'users', SELECTED_USER.id), { balance: newBalance });
+        SELECTED_USER.balance = newBalance;
+        USERS = USERS.map(u => u.id === SELECTED_USER.id ? { ...u, balance: newBalance } : u);
+
+        document.getElementById('modalBalance').textContent = newBalance.toFixed(2);
+        document.getElementById('editBalanceModal').classList.remove('active');
+        loadUsersTab();
+        loadStats();
+        alert('Balance updated!');
+      } catch (err) {
+        alert('Failed: ' + err.message);
+      }
+    });
+
+    // === CHANGE PIN BUTTON ===
+    document.getElementById('changePinBtn').addEventListener('click', () => {
+      document.getElementById('changePinModal').classList.add('active');
+    });
+
+    document.getElementById('changePinForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newPin = document.getElementById('adminNewPin').value;
+      const confirmPin = document.getElementById('adminConfirmPin').value;
+
+      if (newPin !== confirmPin) return alert('PINs do not match');
+      if (newPin.length !== 4 || !/^\d+$/.test(newPin)) return alert('Enter 4 digits');
+
+      try {
+        await updateDoc(doc(db, 'users', SELECTED_USER.id), { pin: newPin });
+        SELECTED_USER.pin = newPin;
+        document.getElementById('modalPin').textContent = '••••';
+        document.getElementById('changePinModal').classList.remove('active');
+        alert('PIN changed successfully');
+      } catch (err) {
+        alert('Failed: ' + err.message);
+      }
+    });
+
+    // === REST OF YOUR ORIGINAL CODE (unchanged) ===
     async function loadUserTransactions() {
       const list = document.getElementById('userTransactions');
       const transactionsSnapshot = await getDocs(collection(db, `users/${SELECTED_USER.id}/transactions`));
@@ -691,7 +801,6 @@
       try {
         await addDoc(collection(db, `users/${SELECTED_USER.id}/transactions`), newTransaction);
 
-        // Only update balance if NOT pending
         if (!pendingMode) {
           const newBalance = type === 'deposit' 
             ? SELECTED_USER.balance + amount 
@@ -714,7 +823,6 @@
       }
     });
 
-    // PENDING TRANSACTIONS TAB
     async function loadPendingTransactions() {
       const container = document.getElementById('pendingTransactions');
       let allPending = [];
